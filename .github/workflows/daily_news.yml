@@ -32,6 +32,8 @@ jobs:
       - name: Send news digest
         working-directory: news_aggregator
         env:
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
           NEWS_TOPIC: ${{ secrets.NEWS_TOPIC }}
         run: |
