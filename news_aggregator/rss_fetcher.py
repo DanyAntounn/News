@@ -3,12 +3,12 @@ Module to fetch news articles from RSS feeds
 """
 import feedparser
 from typing import List, Dict
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
 
 
 class RSSNewsFetcher:
-    """Fetches news articles from RSS feeds"""
-    
+    """Fetches news articles from RSS feeds"""    
     # Major international news RSS feeds
     RSS_FEEDS = {
         'BBC': 'http://feeds.bbc.co.uk/news/rss.xml',
@@ -46,12 +46,14 @@ class RSSNewsFetcher:
                 print(f"Warning: Feed parsing issue: {feed.bozo_exception}")
             
             for entry in feed.entries[:limit]:
+                published_parsed = entry.get('published_parsed') or entry.get('updated_parsed')
                 articles.append({
                     'title': entry.get('title', 'N/A'),
                     'summary': entry.get('summary', entry.get('description', 'No summary available')),
                     'url': entry.get('link', '#'),
                     'source': feed.feed.get('title', 'Unknown'),
                     'published_at': entry.get('published', 'Unknown'),
+                    'published_parsed': published_parsed,
                     'image': ''
                 })
             
@@ -104,13 +106,21 @@ class RSSNewsFetcher:
             summary = article['summary'].lower()
 
             if keywords_norm:
-                for kw in keywords_norm:
-                    if kw and (kw in title or kw in summary):
-                        return True
+                if not any(kw and (kw in title or kw in summary) for kw in keywords_norm):
+                    return False
+
+            if query_lower and query_lower not in title and query_lower not in summary:
                 return False
 
-            if query_lower:
-                return query_lower in title or query_lower in summary
+            # Date filter: only articles in last 24 hours
+            parsed = article.get('published_parsed')
+            if parsed:
+                pub_dt = datetime.fromtimestamp(time.mktime(parsed))
+                if pub_dt < datetime.now() - timedelta(days=1):
+                    return False
+            else:
+                # Exclude if no parseable date
+                return False
 
             return True
 
