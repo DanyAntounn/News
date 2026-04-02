@@ -165,13 +165,13 @@ class EmailSender:
         
         return html
     
-    def send_email(self, recipient_email: str, articles: List[Dict], 
+    def send_email(self, recipient_emails: str | List[str], articles: List[Dict], 
                    topic: str = '', subject: str = None) -> bool:
         """
         Send news articles via email
         
         Args:
-            recipient_email: Email address to send to
+            recipient_emails: Email address(es) to send to (string or list)
             articles: List of article dictionaries
             topic: News topic
             subject: Custom email subject (optional)
@@ -183,11 +183,19 @@ class EmailSender:
             if not subject:
                 subject = f"Daily News Digest - {topic}" if topic else "Daily News Digest"
             
+            # Handle recipient emails
+            if isinstance(recipient_emails, str):
+                recipient_list = [recipient_emails]
+                to_header = recipient_emails
+            else:
+                recipient_list = recipient_emails
+                to_header = ', '.join(recipient_emails)
+            
             # Create message
             message = MIMEMultipart('alternative')
             message['Subject'] = subject
             message['From'] = self.sender_email
-            message['To'] = recipient_email
+            message['To'] = to_header
             
             # Create HTML content
             html_content = self.format_articles_html(articles, topic)
@@ -198,9 +206,9 @@ class EmailSender:
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.starttls()
                 server.login(self.sender_email, self.sender_password)
-                server.send_message(message)
+                server.send_message(message, to_addrs=recipient_list)
             
-            print(f"✓ Email sent successfully to {recipient_email}")
+            print(f"✓ Email sent successfully to {', '.join(recipient_list)}")
             return True
             
         except smtplib.SMTPAuthenticationError:

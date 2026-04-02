@@ -25,25 +25,30 @@ class NewsFetcher:
             raise ValueError("NEWSAPI_KEY not found in environment variables")
     
     def fetch_articles(self, query: str, language: str = 'en', 
-                      sort_by: str = 'publishedAt', page_size: int = 10) -> List[Dict]:
+                      sort_by: str = 'publishedAt', page_size: int = 15,
+                      keywords: List[str] = None) -> List[Dict]:
         """
-        Fetch articles from NewsAPI
+        Fetch articles from NewsAPI and filter by keywords
         
         Args:
-            query: Search query (topic)
+            query: Search query (topic) - supports NewsAPI operators like AND, OR, NOT
             language: Language code (default: 'en')
             sort_by: Sort order ('publishedAt', 'relevancy', 'popularity')
-            page_size: Number of articles to fetch (max 100)
+            page_size: Number of articles to fetch (max 100, default: 15)
+            keywords: List of keywords to filter articles (case-insensitive)
         
         Returns:
-            List of article dictionaries
+            List of article dictionaries filtered by keywords
         """
         try:
+            # Increase page_size if filtering will be applied to get more candidates
+            fetch_size = page_size * 3 if keywords else page_size
+            
             params = {
                 'q': query,
                 'language': language,
                 'sortBy': sort_by,
-                'pageSize': page_size,
+                'pageSize': min(fetch_size, 100),  # NewsAPI max is 100
                 'apiKey': self.api_key
             }
             
@@ -67,7 +72,18 @@ class NewsFetcher:
                     'image': article.get('urlToImage', '')
                 })
             
-            return articles
+            # Filter articles by keywords if provided
+            if keywords:
+                filtered_articles = []
+                for article in articles:
+                    text_to_check = f"{article['title']} {article['summary']}".lower()
+                    if any(keyword.lower() in text_to_check for keyword in keywords):
+                        filtered_articles.append(article)
+                
+                print(f"✓ Fetched {len(articles)} articles, filtered to {len(filtered_articles)} matching keywords")
+                return filtered_articles[:page_size]  # Return only requested number
+            
+            return articles[:page_size]
             
         except requests.exceptions.RequestException as e:
             print(f"Error fetching articles: {e}")

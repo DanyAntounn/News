@@ -35,7 +35,7 @@ def main():
     print("🚀 INITIALIZING NEWS AGGREGATOR")
     print("="*60)
     print(f"\n✓ Sender Email: {scheduler.mailer.sender_email}")
-    print(f"✓ Recipient Email: {scheduler.recipient_email}")
+    print(f"✓ Recipient Emails: {', '.join(scheduler.recipient_emails)}")
     print(f"✓ Current Topic: {scheduler.news_topic}")
     print(f"✓ Scheduled Time: {scheduler.daily_hour:02d}:{scheduler.daily_minute:02d}")
     

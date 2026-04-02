@@ -72,7 +72,7 @@ pip install -r requirements.txt
 NEWSAPI_KEY=your_newsapi_key_here
 SENDER_EMAIL=your_email@gmail.com
 SENDER_PASSWORD=your_gmail_app_password_here
-RECIPIENT_EMAIL=recipient@example.com
+RECIPIENT_EMAILS=recipient@example.com
 DAILY_HOUR=7
 DAILY_MINUTE=0
 NEWS_TOPIC=Lebanon israel war
@@ -111,10 +111,16 @@ Edit `.env` to customize:
 - `NEWSAPI_KEY`: Your NewsAPI key
 - `SENDER_EMAIL`: Your Gmail address
 - `SENDER_PASSWORD`: Gmail app password
-- `RECIPIENT_EMAIL`: Where to send digests
+- `RECIPIENT_EMAILS`: Where to send digests (comma-separated for multiple)
 - `DAILY_HOUR`: Hour for daily delivery (0-23)
 - `DAILY_MINUTE`: Minute for daily delivery (0-59)
 - `NEWS_TOPIC`: Topic to search (e.g., "Lebanon israel war", "technology", "sports")
+  - Supports NewsAPI operators: AND, OR, NOT, quotes for phrases
+  - Example: `"Lebanon" AND ("Israel" OR "Palestine") AND ("war" OR "conflict")`
+- `NEWS_KEYWORDS`: Comma-separated keywords for additional filtering (optional)
+  - Articles must contain at least one keyword in title or description
+  - Case-insensitive matching
+  - Example: `Lebanon, Israel, Palestine, Hezbollah, Hamas`
 
 ## How It Works
 

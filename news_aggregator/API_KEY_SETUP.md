@@ -87,8 +87,8 @@ SENDER_EMAIL=youremail@gmail.com
 # Your App Password from Part 2 (NO SPACES!)
 SENDER_PASSWORD=abcdefghijklmnop
 
-# Where to send emails (can be same as above)
-RECIPIENT_EMAIL=youremail@gmail.com
+# Where to send emails (can be same as above, comma-separated for multiple)
+RECIPIENT_EMAILS=youremail@gmail.com
 
 # What time to send (24-hour format)
 DAILY_HOUR=7

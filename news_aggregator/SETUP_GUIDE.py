@@ -46,8 +46,12 @@ IMPORTANT: You must have 2-Step Verification enabled on your Gmail first!
 NEWSAPI_KEY=paste_your_newsapi_key_here
 SENDER_EMAIL=your_email@gmail.com
 SENDER_PASSWORD=paste_your_16_char_app_password_here
-RECIPIENT_EMAIL=your_email@gmail.com
+RECIPIENT_EMAILS=your_email@gmail.com
 DAILY_HOUR=7
+DAILY_MINUTE=0
+
+   NOTE: For multiple recipients, separate emails with commas:
+   RECIPIENT_EMAILS=your_email@gmail.com, friend@example.com, another@domain.com
 DAILY_MINUTE=0
 NEWS_TOPIC=Lebanon israel war
 

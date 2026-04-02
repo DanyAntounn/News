@@ -21,7 +21,19 @@ class NewsScheduler:
         self.news_topic = os.getenv('NEWS_TOPIC', 'world news')
         self.daily_hour = int(os.getenv('DAILY_HOUR', '7'))
         self.daily_minute = int(os.getenv('DAILY_MINUTE', '0'))
-        self.recipient_email = os.getenv('RECIPIENT_EMAIL')
+        recipient_emails_str = os.getenv('RECIPIENT_EMAILS')
+        if recipient_emails_str:
+            self.recipient_emails = [email.strip() for email in recipient_emails_str.split(',')]
+        else:
+            # Fallback to single recipient for backward compatibility
+            self.recipient_emails = [os.getenv('RECIPIENT_EMAIL', '')]
+        
+        # Load keywords for filtering
+        keywords_str = os.getenv('NEWS_KEYWORDS')
+        if keywords_str:
+            self.news_keywords = [kw.strip() for kw in keywords_str.split(',')]
+        else:
+            self.news_keywords = None
         
         # Initialize components
         self.fetcher = NewsFetcher()
@@ -40,7 +52,8 @@ class NewsScheduler:
             # Fetch articles
             articles = self.fetcher.fetch_articles(
                 query=self.news_topic,
-                page_size=15
+                page_size=15,
+                keywords=self.news_keywords
             )
             
             if not articles:
@@ -50,7 +63,7 @@ class NewsScheduler:
             
             # Send email
             success = self.mailer.send_email(
-                recipient_email=self.recipient_email,
+                recipient_emails=self.recipient_emails,
                 articles=articles,
                 topic=self.news_topic
             )

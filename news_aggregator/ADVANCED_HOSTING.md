@@ -40,8 +40,9 @@ def lambda_handler(event, context):
         
         # Send email
         mailer = EmailSender()
+        recipient_emails = [email.strip() for email in os.environ['RECIPIENT_EMAILS'].split(',')]
         mailer.send_email(
-            recipient_email=os.environ['RECIPIENT_EMAIL'],
+            recipient_emails=recipient_emails,
             articles=articles,
             topic='Lebanon israel war'
         )
@@ -57,7 +58,7 @@ def lambda_handler(event, context):
    - `NEWSAPI_KEY` = your key
    - `SENDER_EMAIL` = your email
    - `SENDER_PASSWORD` = app password
-   - `RECIPIENT_EMAIL` = recipient
+   - `RECIPIENT_EMAILS` = recipients (comma-separated)
    - `NEWS_TOPIC` = topic
 
 ### Step 6: Increase Timeout
@@ -119,8 +120,9 @@ def send_digest(request):
         )
         
         mailer = EmailSender()
+        recipient_emails = [email.strip() for email in os.environ['RECIPIENT_EMAILS'].split(',')]
         mailer.send_email(
-            recipient_email=os.environ['RECIPIENT_EMAIL'],
+            recipient_emails=recipient_emails,
             articles=articles,
             topic='Lebanon israel war'
         )
@@ -137,7 +139,7 @@ def send_digest(request):
    - `NEWSAPI_KEY` = your key
    - `SENDER_EMAIL` = your email
    - `SENDER_PASSWORD` = app password
-   - `RECIPIENT_EMAIL` = recipient
+   - `RECIPIENT_EMAILS` = recipients (comma-separated)
    - `NEWS_TOPIC` = topic
 
 ### Step 5: Increase Timeout

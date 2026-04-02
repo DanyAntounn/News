@@ -21,10 +21,26 @@ Copy this and fill in your information:
 NEWSAPI_KEY=YOUR_API_KEY_HERE
 SENDER_EMAIL=your.email@gmail.com
 SENDER_PASSWORD=YOUR_APP_PASSWORD_HERE
-RECIPIENT_EMAIL=your.email@gmail.com
+RECIPIENT_EMAILS=your.email@gmail.com
 DAILY_HOUR=7
 DAILY_MINUTE=0
 NEWS_TOPIC=Lebanon israel war
+NEWS_KEYWORDS=Lebanon, Israel, Palestine, Hezbollah, Hamas
+```
+
+**Advanced Search Tips:**
+- Use quotes for exact phrases: `"artificial intelligence"`
+- Use AND/OR/NOT operators: `"Lebanon" AND ("Israel" OR "Palestine")`
+- Exclude terms: `technology NOT apple`
+
+**Keyword Filtering:**
+- `NEWS_KEYWORDS` filters articles after fetching
+- Articles must contain at least one keyword in title or description
+- Leave empty to disable filtering
+
+**Note**: For multiple recipients, separate emails with commas:
+```
+RECIPIENT_EMAILS=your.email@gmail.com, friend@example.com
 ```
 
 ### 2️⃣ Get Your NewsAPI Key
@@ -114,7 +130,7 @@ python main.py
 
 - **Time**: Edit `DAILY_HOUR` and `DAILY_MINUTE` in `.env`
 - **Topic**: Edit `NEWS_TOPIC` in `.env` or change from menu
-- **Recipient**: Edit `RECIPIENT_EMAIL` in `.env`
+- **Recipient**: Edit `RECIPIENT_EMAILS` in `.env` (comma-separated for multiple)
 
 ## 📚 Popular Topics
 
