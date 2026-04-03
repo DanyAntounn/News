@@ -2,6 +2,7 @@
 Module to fetch news articles from RSS feeds
 """
 import feedparser
+import re
 from typing import List, Dict
 from datetime import datetime, timedelta
 import time
@@ -39,12 +40,16 @@ class RSSNewsFetcher:
             List of article dictionaries
         """
         try:
-            feed = feedparser.parse(feed_url)
+            print(f"Fetching RSS feed: {feed_url} (limit={limit})")
+            feed = feedparser.parse(feed_url, request_headers={'User-Agent': 'Mozilla/5.0 (compatible; NewsAggregator/1.0)'})
             articles = []
             
             if feed.bozo:
-                print(f"Warning: Feed parsing issue: {feed.bozo_exception}")
+                print(f"Warning: Feed parsing issue in {feed_url}: {feed.bozo_exception}")
             
+            if not getattr(feed, 'entries', None):
+                print(f"No entries in feed: {feed_url}")
+
             for entry in feed.entries[:limit]:
                 published_parsed = entry.get('published_parsed') or entry.get('updated_parsed')
                 articles.append({
@@ -57,6 +62,7 @@ class RSSNewsFetcher:
                     'image': ''
                 })
             
+            print(f"Fetched {len(articles)} entries from {feed_url}")
             return articles
         
         except Exception as e:
@@ -97,34 +103,44 @@ class RSSNewsFetcher:
         """
         all_articles = self.fetch_all_feeds(limit_per_feed=10)
 
-        # Normalize values
-        query_lower = query.lower() if query else None
-        keywords_norm = [kw.strip().lower() for kw in keywords] if keywords else None
+        # Build terms from query (supports AND/OR/NOT separators best-effort) and keywords
+        query_terms = []
+        if query:
+            query_terms = [
+                token.lower() for token in re.findall(r"\b[\w'-]+\b", query)
+                if token.lower() not in {'and', 'or', 'not'}
+            ]
+
+        keywords_norm = [kw.strip().lower() for kw in keywords] if keywords else []
+        terms = list(dict.fromkeys(query_terms + keywords_norm))
 
         def matches(article):
             title = article['title'].lower()
             summary = article['summary'].lower()
 
-            if keywords_norm:
-                if not any(kw and (kw in title or kw in summary) for kw in keywords_norm):
+            # At least one matching term required if any term exists
+            if terms:
+                if not any(term and (term in title or term in summary) for term in terms):
                     return False
 
-            if query_lower and query_lower not in title and query_lower not in summary:
-                return False
-
-            # Date filter: only articles in last 24 hours
+            # Date filter: only articles in last 24 hours, if parse available
             parsed = article.get('published_parsed')
             if parsed:
                 pub_dt = datetime.fromtimestamp(time.mktime(parsed))
                 if pub_dt < datetime.now() - timedelta(days=1):
                     return False
-            else:
-                # Exclude if no parseable date
-                return False
+            # if no date, we allow it (help avoid totally empty results)
 
             return True
 
         filtered = [article for article in all_articles if matches(article)]
+        print(f"RSS fetch: {len(all_articles)} total, {len(filtered)} filtered using terms: {terms}")
+        if filtered:
+            print("Sample articles:")
+            for a in filtered[:3]:
+                print(f" - {a.get('title','N/A')} ({a.get('source','Unknown')})")
+        else:
+            print("No filtered articles matched query/keywords")
         return filtered[:limit]
 
 

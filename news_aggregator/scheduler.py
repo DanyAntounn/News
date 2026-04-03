@@ -56,12 +56,15 @@ class NewsScheduler:
                 limit=15
             )
             
-            if not articles:
-                print("⚠ No articles found for the given topic.")
+            print(f"Debug: news_topic='{self.news_topic}', keywords={self.news_keywords}")
+            print(f"Debug: articles count={len(articles)}")
+            if articles:
+                for i, art in enumerate(articles[:5], start=1):
+                    print(f"  {i}. {art.get('title','N/A')} ({art.get('source','Unknown')})")
             else:
-                print(f"✓ Found {len(articles)} articles")
-            
-            # Send email
+                print("⚠ No articles found for the given topic.")
+
+            # Send email (even when empty so workflow can self-report), but with no-articles notice
             success = self.mailer.send_email(
                 recipient_emails=self.recipient_emails,
                 articles=articles,
