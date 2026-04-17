@@ -12,16 +12,15 @@ class RSSNewsFetcher:
     """Fetches news articles from RSS feeds"""    
     # Major international news RSS feeds
     RSS_FEEDS = {
-        'BBC': 'http://feeds.bbc.co.uk/news/rss.xml',
-        'Reuters': 'https://www.reutersagency.com/feed/?taxonomy=best-topics&output=rss',
+        'BBC': 'https://feeds.bbci.co.uk/news/rss.xml',
+        'Reuters': 'https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-US&gl=US&ceid=US%3Aen',
         'Guardian': 'https://www.theguardian.com/international/rss',
         'CNN': 'http://rss.cnn.com/rss/edition.rss',
         'Al Jazeera': 'https://www.aljazeera.com/xml/rss/all.xml',
         'France24': 'https://www.france24.com/en/rss',
-        'DW': 'https://www.dw.com/en/rss',
-        'AP News': 'https://apnews.com/hub/apf-wire',
+        'DW': 'https://rss.dw.com/rdf/rss-en-all',
         'Euronews': 'https://www.euronews.com/rss',
-        'TRT': 'https://www.trtworld.com/feed/all'
+        'TRT': 'https://www.trtworld.com/'
     }
     
     def __init__(self):
